@@ -1,12 +1,11 @@
 #include <Arduino.h>
 #include <Wire.h>
-
 #include <TFT.h>
 #include <SPI.h>
 #include <SD.h>
 #include <MsTimer2.h>
 #include <Time.h>
-//#include "led.h"
+#include "led.h"
 #include "steppoRTC.h"
 
 #define CS 10
@@ -15,7 +14,7 @@
 
 #define pieperPin 5
 #define buttonPin  2
-//#define ledPin 3
+#define ledPin 3
 //const byte buzzerPin = 13;
 
 volatile int TasterStatus = 0;    //Taster Anschluss an Pin 2 entspricht Vektor 0
@@ -39,7 +38,7 @@ bool buttonState = LOW;
 
 String pieperVer = "0.8.5";
 
-//led myLed(ledPin, 100, 100);
+led myLed(ledPin, 100, 100);
 //led myLed1(ledPin, 70, 70);
 
 steppoRTC myRTC(false);
@@ -68,7 +67,7 @@ void setup()
   {
     Serial.println("Initialization done.");
   }
-    
+
   dataFile = SD.open("LogData.txt", FILE_WRITE);
   if(dataFile)
   {
@@ -79,7 +78,7 @@ void setup()
   }
   dataFile.close();
   Serial.println("File Close");
-  
+
   pinMode(pieperPin, INPUT);
   pinMode(buttonPin, INPUT);
   //pinMode(buzzerPin, OUTPUT);
@@ -113,15 +112,15 @@ void loop()
   switch (modus)
   {
     case 0:
-      //if (pieperState == HIGH)
-	    //{
-      //  myLed.UpdateLED();
-      //}
+      if (pieperState == HIGH)
+	    {
+        myLed.UpdateLED();
+      }
       break;
     case 1:
       if (pieperState == HIGH)
 	    {
-        //myLed1.UpdateLED();
+        myLed.UpdateLED();
       }
       break;
   }
@@ -133,7 +132,7 @@ void loop()
     if (lastTime == 0)
 	  {
       lastTime = myRTC.get();
-      
+
       timeArray[i-1] = lastTime;
 
       dataFile = SD.open("LogData.txt", FILE_WRITE);
@@ -184,13 +183,13 @@ void loop()
       screen.fill(0, 0, 0);
       screen.noStroke();
       screen.rect(0, 40, screen.width(), 21, 0);
-      
+
       screen.setTextSize(3);
       screen.setCursor(2, 40);
-      
+
       screen.print(stunden);
       screen.print(":");
-      
+
       screenDigit(minuten);
       screen.print(":");
 
@@ -205,7 +204,7 @@ void loop()
       screen.fill(0, 0, 0);
       screen.noStroke();
       screen.rect(0, 115, screen.width(), screen.height());
-      
+
       for (int counter = 0; counter < i; counter++)
       {
         screen.print(counter+ 1 );
@@ -215,7 +214,7 @@ void loop()
         screenDate(timeArray[counter]);
         screen.println();
       }
- 
+
       delay(450);
       screen.invertDisplay(true);
       delay(450);
@@ -236,24 +235,24 @@ void loop()
     }
   } else if (pieperState == LOW)
   {
-    //myLed.offLED();
+    myLed.offLED();
     sekunden = 0;
     minuten = 0;
     stunden = 0;
     lastTime = 0;
   }
-  
+
   temp = myRTC.temperature();
   if (temp != tempPrev)
   {
     screen.fill(0, 0, 0);
     screen.noStroke();
     screen.rect(70, 11, screen.width(), 16, 0);
-    
+
     screen.setTextSize(1);
-    screen.stroke(255, 255, 255); 
+    screen.stroke(255, 255, 255);
     screen.text("T:", 70, 11);
-     
+
     screen.print(temp);
     screen.print((char)247);
     screen.print("C");
@@ -278,7 +277,7 @@ void screenInit()
   {
     screen.text("Ver:", 7, 11);
     screen.print(pieperVer);
-    
+
   }
 }
 
@@ -330,11 +329,11 @@ String digit(byte element)
 }
 
 String printDay(time_t t) // Hier wird wird für den vorher im Code schon verwendeten Befehl printDay eine Bedeutung festgelegt
-{  
+{
   int day;
   day = weekday(t); // Die Wochentage sollen abhängig vom Datum angezeigt werden.
   if(day == 1){return ("So, ");} // Wenn es sich um Tag 1 handelt soll „So“ usw. angezeigt werden.
-  if(day == 2){return ("Mo, ");}  
+  if(day == 2){return ("Mo, ");}
   if(day == 3){return ("Di, ");}
   if(day == 4){return ("Mi, ");}
   if(day == 5){return ("Do, ");}
