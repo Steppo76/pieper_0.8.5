@@ -361,5 +361,6 @@ void TasterUnterbricht()
     screen.fill(0, 0, 0);
     screen.noStroke();
     screen.rect(0, 20, screen.width(), screen.height(), 0);
+    timeArray[4] = {0};
   }
 }
